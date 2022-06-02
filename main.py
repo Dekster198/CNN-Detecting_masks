@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+from tensorflow import keras
 import cv2 as cv
 import xml.etree.ElementTree as ET
 from google.colab import drive
@@ -42,3 +43,16 @@ for i in range(10):
             cv.rectangle(img, (xmin, ymin), (xmax, ymax), (0,255,0), 1)
 
     cv2_imshow(img)
+
+for data in datas:
+  img = cv.imread(data['path'])
+  for (category, xmin, ymin, xmax, ymax) in data['objects']:
+    roi = img[ymin:ymax, xmin:xmax]
+    roi = cv.resize(roi, (IMG_SIZE, IMG_SIZE))
+    features = cv.cvtColor(roi, cv.COLOR_BGR2RGB)
+    label = keras.utils.to_categorical(category, 3)
+    x.append(features)
+    y.append(label)
+
+x = np.array(x)
+y = np.array(y)
