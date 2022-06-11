@@ -11,6 +11,7 @@ drive.mount('/content/drive/')
 
 DATADIR_ANNOTATIONS = '/content/drive/MyDrive/Datasets/People_with_and_without_mask/annotations/'
 DATADIR_IMAGES = '/content/drive/MyDrive/Datasets/People_with_and_without_mask/images/'
+IMG_SIZE = 150
 label2category = {'without_mask':0, 'mask_weared_incorrect':1, 'with_mask':2}
 datas = []
 
@@ -56,3 +57,19 @@ for data in datas:
 
 x = np.array(x)
 y = np.array(y)
+
+model = keras.Sequential([
+                          Conv2D(32, (3,3), activation='relu', input_shape=(IMG_SIZE, IMG_SIZE, 3)),
+                          MaxPooling2D((2,2)),
+                          Conv2D(64, (3,3), activation='relu'),
+                          MaxPooling2D((2,2)),
+                          Conv2D(128, (3,3), activation='relu'),
+                          MaxPooling2D((2,2)),
+                          Conv2D(128, (3,3), activation='relu'),
+                          MaxPooling2D((2,2)),
+                          Flatten(),
+                          Dense(64, activation='relu'),
+                          Dense(3, activation='softmax')
+])
+model.compile(loss='categorical_crossentropy', optimizer='nadam', metrics=['accuracy'])
+model.fit(x, y, epochs=10, batch_size=32, validation_split=0.2)
